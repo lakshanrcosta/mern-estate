@@ -1,4 +1,4 @@
-import { statusCodes } from '../utils/statusCodes';
+import { statusCodes } from '../utils/statusCodes.js';
 
 export const errorHandlerMiddleware = (error, request, response, next) => {
   const statusCode = error.statusCode || statusCodes.INTERNAL_SERVER_ERROR;

@@ -1,14 +1,8 @@
 import bcryptjs from 'bcryptjs';
-import { validateJsonSchema } from '../schema/jsonSchemaValidator.js';
-import { signupSchema } from '../schema/signupSchema.js';
 import { User } from '../models/user.model.js';
+import { statusCodes } from '../utils/statusCodes.js';
 
-export const signup = async (request, response) => {
-  const isValid = validateJsonSchema(signupSchema, request.body);
-  if (!isValid) {
-    response.status(400).json({ message: 'Request parameter schema validation failed!' });
-  }
-
+export const signup = async (request, response, next) => {
   const { username, email, password } = request.body;
   const hashedPassword = await bcryptjs.hash(password, 10);
 
@@ -16,8 +10,10 @@ export const signup = async (request, response) => {
 
   try {
     await newUser.save();
-    response.status(201).json({ message: 'User created successfully' });
+    response
+      .status(statusCodes.CREATED)
+      .json({ status: 'success', message: 'User created successfully' });
   } catch (error) {
-    response.status(500).json({ message: error.message });
+    next(error);
   }
 };

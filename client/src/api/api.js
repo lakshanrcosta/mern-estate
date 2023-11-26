@@ -10,3 +10,7 @@ instance.defaults.headers.common['Content-Type'] = 'application/json';
 export const createNewUser = (formData) => {
   return instance.post('/api/auth/signup', formData);
 };
+
+export const signInUser = (formData) => {
+  return instance.post('/api/auth/signin', formData);
+};

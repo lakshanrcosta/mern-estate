@@ -1,9 +1,10 @@
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { DateTime, Duration } from 'luxon';
+import { DateTime } from 'luxon';
 import { User } from '../models/user.model.js';
-import { statusCodes } from '../utils/statusCodes.js';
+import { statusCodes, statusMessages } from '../utils/status.js';
 import { generateError } from '../utils/errors.js';
+import { generateRandomPassword, generateRandomUsername } from '../utils/helpers.js';
 
 export const signup = async (request, response, next) => {
   const { displayName, username, email, password } = request.body;
@@ -13,9 +14,7 @@ export const signup = async (request, response, next) => {
 
   try {
     await newUser.save();
-    response
-      .status(statusCodes.CREATED)
-      .json({ status: 'success', message: 'User created successfully' });
+    createNewUserResponse(response);
   } catch (error) {
     next(error);
   }
@@ -29,34 +28,70 @@ export const signin = async (request, response, next) => {
     });
 
     if (!user) {
-      return next(generateError(404, 'failed', 'User not found'));
+      return next(generateError(statusCodes.NOT_FOUNT, statusMessages.FAILED, 'User not found'));
     }
 
     const isPasswordMatch = await bcryptjs.compare(password, user.password);
-
     if (!isPasswordMatch) {
-      return next(generateError(401, 'failed', 'Invalid user or password'));
+      return next(
+        generateError(statusCodes.UNAUTHORIZED, statusMessages.FAILED, 'Invalid user or password')
+      );
     }
 
-    const tokenExpires = DateTime.local().plus({
-      milliseconds: parseInt(process.env.JWT_EXPIRE)
-    });
-
-    const tokenDuration = parseInt(process.env.JWT_EXPIRE) / (1000 * 60);
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: tokenDuration
-    });
-
-    delete user._doc.password;
-
-    response
-      .cookie('access_token', token, {
-        httpOnly: true,
-        expires: tokenExpires.toJSDate()
-      })
-      .status(200)
-      .json({ user });
+    createSignInResponse(user, response);
   } catch (error) {
     next(error);
   }
+};
+
+export const signInWithGoogle = async (request, response, next) => {
+  const { name, email, avatar } = request.body;
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      createSignInResponse(user, response);
+      return;
+    }
+
+    const username = generateRandomUsername(name);
+    const randomPassword = generateRandomPassword(12);
+    const newUser = new User({
+      displayName: name,
+      username,
+      email,
+      password: randomPassword,
+      avatar
+    });
+    await newUser.save();
+    createSignInResponse(newUser, response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createSignInResponse = (user, response) => {
+  const tokenExpires = DateTime.local().plus({
+    milliseconds: parseInt(process.env.JWT_EXPIRE)
+  });
+
+  const tokenDuration = parseInt(process.env.JWT_EXPIRE) / (1000 * 60);
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: tokenDuration
+  });
+
+  delete user._doc.password;
+
+  response
+    .cookie('access_token', token, {
+      httpOnly: true,
+      expires: tokenExpires.toJSDate()
+    })
+    .status(statusCodes.OK)
+    .json({ status: statusMessages.SUCCESS, message: 'Sign in successful ', ...user._doc });
+};
+
+const createNewUserResponse = (response) => {
+  response
+    .status(statusCodes.CREATED)
+    .json({ status: statusMessages.SUCCESS, message: 'User created successfully' });
 };

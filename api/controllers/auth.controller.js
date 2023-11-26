@@ -43,8 +43,6 @@ export const signin = async (request, response, next) => {
     });
 
     const tokenDuration = parseInt(process.env.JWT_EXPIRE) / (1000 * 60);
-    console.log(tokenDuration);
-
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: tokenDuration
     });

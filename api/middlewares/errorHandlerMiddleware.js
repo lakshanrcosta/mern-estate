@@ -5,9 +5,7 @@ export const errorHandlerMiddleware = (error, request, response, next) => {
   const status = error.status || 'failed';
   const errorMessage = error.message || 'Internal server error';
   response.status(statusCode).json({
-    error: {
-      status,
-      message: errorMessage
-    }
+    status,
+    message: errorMessage
   });
 };

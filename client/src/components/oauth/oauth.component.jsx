@@ -3,9 +3,11 @@ import { app } from '../../utils/firebase';
 import { signInWithGoogle } from '../../api/api';
 import { useDispatch } from 'react-redux';
 import { signInSuccess, signInStart, signInFailure } from '../../redux/user/user.slice';
+import { useNavigate } from 'react-router-dom';
 
 const OAuth = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     dispatch(signInStart());
@@ -16,6 +18,7 @@ const OAuth = () => {
       const userData = await signInWithPopup(auth, provider);
       const response = await signInWithGoogle(userData);
       dispatch(signInSuccess(response.data));
+      navigate('/');
     } catch (error) {
       const errorMessage = !error.response ? error.message : error.response.data.message;
       dispatch(signInFailure(errorMessage));

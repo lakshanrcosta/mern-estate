@@ -9,7 +9,7 @@ export const generateRandomPassword = (length, numbers = true, uppercase = true)
 };
 
 export const generateRandomUsername = (givenNames) => {
-  const names = givenNames.split(' ').join('');
+  const names = givenNames.split(' ').join('').toLowerCase();
   const randomNumber = Math.floor(Math.random() * 90) + 10;
   return `${names}${randomNumber}`;
 };

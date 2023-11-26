@@ -1,12 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { signInUser } from '../api/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/user.slice';
+import OAuth from '../components/oauth/oauth.component';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     setFormData({
@@ -17,18 +21,16 @@ const SignIn = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
+
+    dispatch(signInStart());
+
     try {
-      await signInUser(formData);
-      setIsLoading(false);
-      setError(null);
+      const response = await signInUser(formData);
+      dispatch(signInSuccess(response.data));
       navigate('/');
     } catch (error) {
-      if (!error.response) {
-        setError(error.message);
-      }
-      setIsLoading(false);
-      setError(error.response.data.message);
+      const errorMessage = !error.response ? error.message : error.response.data.message;
+      dispatch(signInFailure(errorMessage));
     }
   };
 
@@ -53,10 +55,11 @@ const SignIn = () => {
           onChange={handleChange}
         />
         <button
-          disabled={isLoading}
+          disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-          {isLoading ? 'Signing in' : 'Sign In'}
+          {loading ? 'Signing in' : 'Sign In'}
         </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Don&apos;t have an account?</p>

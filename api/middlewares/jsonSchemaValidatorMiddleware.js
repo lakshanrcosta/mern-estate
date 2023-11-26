@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { statusCodes } from '../utils/statusCodes.js';
+import { statusCodes } from '../utils/status.js';
 
 const ajv = new Ajv();
 

@@ -19,7 +19,7 @@ export const signInWithGoogle = (userData) => {
   const body = JSON.stringify({
     name: userData.user.displayName,
     email: userData.user.email,
-    photo: userData.user.photo
+    avatar: userData.user.photoURL
   });
   return instance.post('/api/auth/google', body);
 };

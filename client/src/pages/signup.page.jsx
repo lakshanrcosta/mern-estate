@@ -35,6 +35,14 @@ export const SignUp = () => {
       <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
+          type="displayName"
+          required
+          placeholder="Display Name"
+          className="border p-3 rounded-lg"
+          id="displayName"
+          onChange={handleChange}
+        />
+        <input
           type="email"
           required
           placeholder="Email"

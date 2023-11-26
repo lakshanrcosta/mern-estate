@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { createNewUser } from '../api/api';
 
-export const SignUp = () => {
+const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setFormData({
@@ -19,15 +20,16 @@ export const SignUp = () => {
     setIsLoading(true);
     try {
       await createNewUser(formData);
+      setIsLoading(false);
+      setError(null);
+      navigate('/signin');
     } catch (error) {
       if (!error.response) {
         setError(error.message);
       }
-      setError(error.response.data.message);
       setIsLoading(false);
+      setError(error.response.data.message);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -74,7 +76,7 @@ export const SignUp = () => {
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account?</p>
-        <Link>
+        <Link to={'/signin'}>
           <span className="text-blue-700">Sign In</span>
         </Link>
       </div>
@@ -82,3 +84,5 @@ export const SignUp = () => {
     </div>
   );
 };
+
+export default SignUp;

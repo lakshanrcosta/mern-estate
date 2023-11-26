@@ -12,9 +12,12 @@ export const signUpSchema = {
     },
     password: {
       type: 'string'
+    },
+    avatar: {
+      type: 'string'
     }
   },
-  required: ['username', 'email', 'password']
+  required: ['displayName', 'username', 'email', 'password']
 };
 
 export const signInSchema = {
@@ -28,4 +31,20 @@ export const signInSchema = {
     }
   },
   required: ['usernameOrEmail', 'password']
+};
+
+export const signInWithGoogleSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string'
+    },
+    email: {
+      type: 'string'
+    },
+    avatar: {
+      type: 'string'
+    }
+  },
+  required: ['name', 'email', 'avatar']
 };

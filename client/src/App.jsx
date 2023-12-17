@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/home.page';
-import SignUp from './pages/signUp.page';
+import SignUp from './pages/signup.page';
 import SignIn from './pages/signIn.page';
 import About from './pages/about.page';
 import Profile from './pages/profile.page';
-import SignOut from './pages/signOut.page';
+import SignOut from './pages/signout.page';
 import Header from './components/header/header.component';
 import PrivateRoute from './routes/privateRoute/private.route';
 

@@ -1,8 +1,16 @@
 import express from 'express';
-import { test } from '../controllers/user.controller.js';
+import { updateUser } from '../controllers/user.controller.js';
+import { verifyToken } from '../utils/helpers.js';
+import { jsonSchemaValidatorMiddleware } from '../middlewares/jsonSchemaValidatorMiddleware.js';
+import { updateUserSchema } from '../schemas/userSchema.js';
 
 const userRouter = express.Router();
 
-userRouter.get('/test', test);
+userRouter.post(
+  '/update/:id',
+  verifyToken,
+  jsonSchemaValidatorMiddleware(updateUserSchema),
+  updateUser
+);
 
 export default userRouter;

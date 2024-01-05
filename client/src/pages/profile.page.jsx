@@ -63,7 +63,7 @@ const Profile = () => {
       <form className="flex flex-col gap-4">
         <input onChange={handleFileOnChange} type="file" ref={fileRef} hidden accept="image/*" />
         <img
-          src={currentUser.avatar}
+          src={formData.avatar || currentUser.avatar}
           alt=""
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
           onClick={() => fileRef.current.click()}

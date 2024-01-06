@@ -55,11 +55,12 @@ export const signInWithGoogle = async (request, response, next) => {
 
     const username = generateRandomUsername(name);
     const randomPassword = generateRandomPassword(12);
+    const hashedPassword = await bcryptjs.hash(randomPassword, 10);
     const newUser = new User({
       displayName: name,
       username,
       email,
-      password: randomPassword,
+      password: hashedPassword,
       avatar
     });
     await newUser.save();

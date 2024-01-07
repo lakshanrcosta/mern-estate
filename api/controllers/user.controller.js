@@ -15,7 +15,7 @@ export const updateUser = async (request, response, next) => {
   }
 
   try {
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
         $set: {
@@ -27,11 +27,8 @@ export const updateUser = async (request, response, next) => {
       },
       { new: true }
     );
-
-    response.status(statusCodes.OK).json({
-      status: statusMessages.SUCCESS,
-      message: 'User updated successfully'
-    });
+    delete updatedUser._doc.password;
+    response.status(statusCodes.OK).json(updatedUser._doc);
   } catch (error) {
     next(error);
   }

@@ -23,3 +23,7 @@ export const signInWithGoogle = (userData) => {
   });
   return instance.post('/api/auth/google', body);
 };
+
+export const updateUser = (formData, userId) => {
+  return instance.post(`/api/user/update/${userId}`, formData);
+};

@@ -13,6 +13,5 @@ export const updateUserSchema = {
     avatar: {
       type: 'string'
     }
-  },
-  required: ['displayName', 'username', 'email', 'avatar']
+  }
 };

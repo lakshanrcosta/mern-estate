@@ -33,3 +33,25 @@ export const updateUser = async (request, response, next) => {
     next(error);
   }
 };
+
+export const deleteUser = async (request, response, next) => {
+  const userId = request.user.id;
+  if (userId !== request.params.id) {
+    return next(
+      generateError(
+        statusCodes.FORBIDDEN,
+        statusMessages.FAILED,
+        "Cannot cannot other user's accounts"
+      )
+    );
+  }
+
+  try {
+    await User.findByIdAndDelete(request.params.id);
+    response
+      .status(statusCodes.OK)
+      .json({ status: statusMessages.SUCCESS, message: 'User deleted successfully' });
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -1,8 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signInUser } from '../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { signInStart, signInSuccess, signInFailure } from '../redux/user/user.slice';
+import {
+  signInPageRender,
+  signInStart,
+  signInSuccess,
+  signInFailure
+} from '../redux/user/user.slice';
 import OAuth from '../components/oauth/oauth.component';
 
 const SignIn = () => {
@@ -11,6 +16,12 @@ const SignIn = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (error) {
+      dispatch(signInPageRender());
+    }
+  }, [dispatch]);
 
   const handleChange = (event) => {
     setFormData({
@@ -21,15 +32,16 @@ const SignIn = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     dispatch(signInStart());
 
     try {
       const response = await signInUser(formData);
       dispatch(signInSuccess(response.data));
       navigate('/');
-    } catch (error) {
-      const errorMessage = !error.response ? error.message : error.response.data.message;
+    } catch (signInError) {
+      const errorMessage = !signInError.response
+        ? signInError.message
+        : signInError.response.data.message;
       dispatch(signInFailure(errorMessage));
     }
   };

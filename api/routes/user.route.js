@@ -1,9 +1,8 @@
 import express from 'express';
-import { updateUser } from '../controllers/user.controller.js';
-import { deleteUser } from '../controllers/user.controller.js';
+import { updateUser, deleteUser, updatePassword } from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/helpers.js';
 import { jsonSchemaValidatorMiddleware } from '../middlewares/jsonSchemaValidatorMiddleware.js';
-import { updateUserSchema } from '../schemas/userSchema.js';
+import { updateUserSchema, updatePasswordSchema } from '../schemas/userSchema.js';
 
 const userRouter = express.Router();
 
@@ -15,5 +14,12 @@ userRouter.post(
 );
 
 userRouter.delete('/delete/:id', verifyToken, deleteUser);
+
+userRouter.patch(
+  '/update-password/:id',
+  verifyToken,
+  jsonSchemaValidatorMiddleware(updatePasswordSchema),
+  updatePassword
+);
 
 export default userRouter;

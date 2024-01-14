@@ -13,6 +13,9 @@ const userSlice = createSlice({
     signInPageRender: (state) => {
       state.error = null;
     },
+    profilePageRender: (state) => {
+      state.passwordSuccess = false;
+    },
     signInStart: (state) => {
       state.loading = true;
     },
@@ -48,12 +51,25 @@ const userSlice = createSlice({
     deleteUserFailure: (state, action) => {
       state.error = action.payload;
       state.loading = false;
+    },
+    updateUserPasswordStart: (state) => {
+      state.loading = true;
+    },
+    updateUserPasswordSuccess: (state) => {
+      state.loading = false;
+      state.error = null;
+      state.passwordSuccess = true;
+    },
+    updateUserPasswordFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
     }
   }
 });
 
 export const {
   signInPageRender,
+  profilePageRender,
   signInStart,
   signInSuccess,
   signInFailure,
@@ -62,7 +78,10 @@ export const {
   updateUserFailure,
   deleteUserStart,
   deleteUserSuccess,
-  deleteUserFailure
+  deleteUserFailure,
+  updateUserPasswordStart,
+  updateUserPasswordSuccess,
+  updateUserPasswordFailure
 } = userSlice.actions;
 
 export default userSlice.reducer;

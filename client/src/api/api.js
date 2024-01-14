@@ -31,3 +31,7 @@ export const updateUser = (formData, userId) => {
 export const deleteUser = (userId) => {
   return instance.delete(`/api/user/delete/${userId}`);
 };
+
+export const updatePassword = (formData, userId) => {
+  return instance.patch(`/api/user/update-password/${userId}`, formData);
+};

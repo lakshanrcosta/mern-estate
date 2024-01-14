@@ -8,20 +8,23 @@ import {
   updateUserFailure,
   deleteUserStart,
   deleteUserSuccess,
-  deleteUserFailure
+  deleteUserFailure,
+  profilePageRender
 } from '../redux/user/user.slice';
 import { updateUser, deleteUser } from '../api/api';
 import ConfirmationPopup from '../components/popups/confirmationPopup.component';
+import ChangePasswordPopup from '../components/popups/changePasswordPopup.component';
 
 const Profile = () => {
   const fileRef = useRef(null);
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, passwordSuccess } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [uploadPercentage, setUploadPercentage] = useState(0);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const [updateUserSuccessful, setUpdateUserSuccessful] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showChangePasswordPopupOpen, setShowChangePasswordPopupOpen] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -42,6 +45,14 @@ const Profile = () => {
       dispatch(deleteUserFailure(error.message));
       setShowConfirmation(false);
     }
+  };
+
+  const openChangePasswordPopup = () => {
+    setShowChangePasswordPopupOpen(true);
+  };
+
+  const closeChangePasswordPopup = () => {
+    setShowChangePasswordPopupOpen(false);
   };
 
   const handleFileUpload = (file) => {
@@ -108,6 +119,12 @@ const Profile = () => {
     }
   }, [file]);
 
+  useEffect(() => {
+    if (passwordSuccess) {
+      dispatch(profilePageRender());
+    }
+  }, [dispatch]);
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -164,7 +181,9 @@ const Profile = () => {
           className="text-red-700 cursor-pointer font-bold">
           Delete Account
         </span>
-        <span className="text-green-700 cursor-pointer font-bold">Change Password</span>
+        <span onClick={openChangePasswordPopup} className="text-green-700 cursor-pointer font-bold">
+          Change Password
+        </span>
         <span className="text-red-700 cursor-pointer font-bold">Sign Out</span>
       </div>
 
@@ -172,6 +191,9 @@ const Profile = () => {
         {error && <span className="text-red-700 mt-5 font-bold">{error}</span>}
         {updateUserSuccessful && (
           <span className="text-green-500 mt-5 font-bold">User info updated successfully</span>
+        )}
+        {passwordSuccess && (
+          <span className="text-green-500 mt-5 font-bold">Password updated successfully</span>
         )}
       </p>
       {showConfirmation && (
@@ -181,6 +203,10 @@ const Profile = () => {
           onCancel={() => setShowConfirmation(false)}
         />
       )}
+      <ChangePasswordPopup
+        isOpen={showChangePasswordPopupOpen}
+        onClose={closeChangePasswordPopup}
+      />
     </div>
   );
 };

@@ -2,8 +2,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRef, useState, useEffect } from 'react';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../utils/firebase';
-import { updateUserStart, updateUserSuccess, updateUserFailure } from '../redux/user/user.slice';
-import { updateUser } from '../api/api';
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure
+} from '../redux/user/user.slice';
+import { updateUser, deleteUser } from '../api/api';
+import ConfirmationPopup from '../components/popups/confirmationPopup.component';
 
 const Profile = () => {
   const fileRef = useRef(null);
@@ -13,11 +21,27 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const [updateUserSuccessful, setUpdateUserSuccessful] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const dispatch = useDispatch();
 
   const handleFileOnChange = (event) => {
     setFile(event.target.files[0]);
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      await deleteUser(currentUser._id);
+      dispatch(deleteUserSuccess());
+    } catch (error) {
+      const errorMessage = !error.response.data.message
+        ? error.message
+        : error.response.data.message;
+      setError(errorMessage);
+      dispatch(deleteUserFailure(error.message));
+      setShowConfirmation(false);
+    }
   };
 
   const handleFileUpload = (file) => {
@@ -70,7 +94,9 @@ const Profile = () => {
       dispatch(updateUserSuccess(response.data));
       setUpdateUserSuccessful(true);
     } catch (error) {
-      const errorMessage = !error.response ? error.message : error.response.data.message;
+      const errorMessage = !error.response.data.message
+        ? error.message
+        : error.response.data.message;
       setError(errorMessage);
       dispatch(updateUserFailure(errorMessage));
     }
@@ -133,7 +159,11 @@ const Profile = () => {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer font-bold">Delete Account</span>
+        <span
+          onClick={() => setShowConfirmation(true)}
+          className="text-red-700 cursor-pointer font-bold">
+          Delete Account
+        </span>
         <span className="text-green-700 cursor-pointer font-bold">Change Password</span>
         <span className="text-red-700 cursor-pointer font-bold">Sign Out</span>
       </div>
@@ -144,6 +174,13 @@ const Profile = () => {
           <span className="text-green-500 mt-5 font-bold">User info updated successfully</span>
         )}
       </p>
+      {showConfirmation && (
+        <ConfirmationPopup
+          message={`Are you sure you want to delete this user ${currentUser.displayName}?`}
+          onConfirm={handleDeleteUser}
+          onCancel={() => setShowConfirmation(false)}
+        />
+      )}
     </div>
   );
 };

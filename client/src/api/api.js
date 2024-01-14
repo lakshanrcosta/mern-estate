@@ -27,3 +27,7 @@ export const signInWithGoogle = (userData) => {
 export const updateUser = (formData, userId) => {
   return instance.post(`/api/user/update/${userId}`, formData);
 };
+
+export const deleteUser = (userId) => {
+  return instance.delete(`/api/user/delete/${userId}`);
+};

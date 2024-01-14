@@ -25,7 +25,9 @@ const SignUp = () => {
       setError(null);
       navigate('/signin');
     } catch (error) {
-      const errorMessage = !error.response ? error.message : error.response.data.message;
+      const errorMessage = !error.response.data.message
+        ? error.message
+        : error.response.data.message;
       setIsLoading(false);
       setError(errorMessage);
     }

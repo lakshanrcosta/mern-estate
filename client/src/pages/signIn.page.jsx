@@ -39,7 +39,7 @@ const SignIn = () => {
       dispatch(signInSuccess(response.data));
       navigate('/');
     } catch (signInError) {
-      const errorMessage = !signInError.response
+      const errorMessage = !signInError.response.data.message
         ? signInError.message
         : signInError.response.data.message;
       dispatch(signInFailure(errorMessage));

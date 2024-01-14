@@ -9,9 +9,12 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  profilePageRender
+  profilePageRender,
+  signOutStart,
+  signOutSuccess,
+  signOutFailure
 } from '../redux/user/user.slice';
-import { updateUser, deleteUser } from '../api/api';
+import { updateUser, deleteUser, signOut } from '../api/api';
 import ConfirmationPopup from '../components/popups/confirmationPopup.component';
 import ChangePasswordPopup from '../components/popups/changePasswordPopup.component';
 
@@ -23,7 +26,8 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const [updateUserSuccessful, setUpdateUserSuccessful] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDeleteAccountConfirmation, setShowDeleteAccountConfirmation] = useState(false);
+  const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const [showChangePasswordPopupOpen, setShowChangePasswordPopupOpen] = useState(false);
 
   const dispatch = useDispatch();
@@ -37,13 +41,29 @@ const Profile = () => {
       dispatch(deleteUserStart());
       await deleteUser(currentUser._id);
       dispatch(deleteUserSuccess());
+      setShowDeleteAccountConfirmation(false);
     } catch (error) {
       const errorMessage = !error.response.data.message
         ? error.message
         : error.response.data.message;
       setError(errorMessage);
       dispatch(deleteUserFailure(error.message));
-      setShowConfirmation(false);
+      setShowDeleteAccountConfirmation(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    dispatch(signOutStart());
+    try {
+      await signOut();
+      dispatch(signOutSuccess());
+    } catch (error) {
+      const errorMessage = !error.response.data.message
+        ? error.message
+        : error.response.data.message;
+      setError(errorMessage);
+      dispatch(signOutFailure(errorMessage));
+      setShowSignOutConfirmation(false);
     }
   };
 
@@ -177,14 +197,18 @@ const Profile = () => {
       </form>
       <div className="flex justify-between mt-5">
         <span
-          onClick={() => setShowConfirmation(true)}
+          onClick={() => setShowDeleteAccountConfirmation(true)}
           className="text-red-700 cursor-pointer font-bold">
           Delete Account
         </span>
         <span onClick={openChangePasswordPopup} className="text-green-700 cursor-pointer font-bold">
           Change Password
         </span>
-        <span className="text-red-700 cursor-pointer font-bold">Sign Out</span>
+        <span
+          onClick={() => setShowSignOutConfirmation(true)}
+          className="text-red-700 cursor-pointer font-bold">
+          Sign Out
+        </span>
       </div>
 
       <p className="text-center mt-5">
@@ -196,11 +220,18 @@ const Profile = () => {
           <span className="text-green-500 mt-5 font-bold">Password updated successfully</span>
         )}
       </p>
-      {showConfirmation && (
+      {showDeleteAccountConfirmation && (
         <ConfirmationPopup
           message={`Are you sure you want to delete this user ${currentUser.displayName}?`}
           onConfirm={handleDeleteUser}
-          onCancel={() => setShowConfirmation(false)}
+          onCancel={() => setShowDeleteAccountConfirmation(false)}
+        />
+      )}
+      {showSignOutConfirmation && (
+        <ConfirmationPopup
+          message={`Are you sure you want to log out?`}
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutConfirmation(false)}
         />
       )}
       <ChangePasswordPopup

@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUser, deleteUser, updatePassword } from '../controllers/user.controller.js';
+import { updateUser, deleteUser, updatePassword, signOut } from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/helpers.js';
 import { jsonSchemaValidatorMiddleware } from '../middlewares/jsonSchemaValidatorMiddleware.js';
 import { updateUserSchema, updatePasswordSchema } from '../schemas/userSchema.js';
@@ -21,5 +21,7 @@ userRouter.patch(
   jsonSchemaValidatorMiddleware(updatePasswordSchema),
   updatePassword
 );
+
+userRouter.get('/signout', verifyToken, signOut);
 
 export default userRouter;

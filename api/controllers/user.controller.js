@@ -10,7 +10,7 @@ export const updateUser = async (request, response, next) => {
       generateError(
         statusCodes.FORBIDDEN,
         statusMessages.FAILED,
-        "Cannot update other user's details"
+        "You cannot update other user's details"
       )
     );
   }
@@ -42,7 +42,7 @@ export const deleteUser = async (request, response, next) => {
       generateError(
         statusCodes.FORBIDDEN,
         statusMessages.FAILED,
-        "Cannot cannot delete other user's accounts"
+        "You cannot delete other user's accounts"
       )
     );
   }
@@ -65,7 +65,7 @@ export const updatePassword = async (request, response, next) => {
       generateError(
         statusCodes.FORBIDDEN,
         statusMessages.FAILED,
-        "Cannot cannot change other user's password"
+        "You cannot change other user's password"
       )
     );
   }
@@ -110,6 +110,15 @@ export const updatePassword = async (request, response, next) => {
     response
       .status(statusCodes.OK)
       .json({ status: statusMessages.SUCCESS, message: 'Password changed successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signOut = (request, response, next) => {
+  try {
+    response.clearCookie('access_token');
+    response.json({ status: statusMessages.SUCCESS, message: 'User signed out successfully' });
   } catch (error) {
     next(error);
   }

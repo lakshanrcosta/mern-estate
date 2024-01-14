@@ -25,11 +25,11 @@ const SignUp = () => {
       setError(null);
       navigate('/signin');
     } catch (error) {
-      if (!error.response) {
-        setError(error.message);
-      }
+      const errorMessage = !error.response.data.message
+        ? error.message
+        : error.response.data.message;
       setIsLoading(false);
-      setError(error.response.data.message);
+      setError(errorMessage);
     }
   };
 

@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { statusCodes } from '../utils/status.js';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ strict: false });
 
 export const jsonSchemaValidatorMiddleware = (schema) => {
   return (request, response, next) => {

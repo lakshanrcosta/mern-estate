@@ -23,3 +23,19 @@ export const signInWithGoogle = (userData) => {
   });
   return instance.post('/api/auth/google', body);
 };
+
+export const updateUser = (formData, userId) => {
+  return instance.post(`/api/user/update/${userId}`, formData);
+};
+
+export const deleteUser = (userId) => {
+  return instance.delete(`/api/user/delete/${userId}`);
+};
+
+export const updatePassword = (formData, userId) => {
+  return instance.patch(`/api/user/update-password/${userId}`, formData);
+};
+
+export const signOut = () => {
+  return instance.get(`/api/user/signout`);
+};

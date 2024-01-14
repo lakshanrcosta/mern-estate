@@ -88,7 +88,7 @@ const createSignInResponse = (user, response) => {
       expires: tokenExpires.toJSDate()
     })
     .status(statusCodes.OK)
-    .json({ status: statusMessages.SUCCESS, message: 'Sign in successful ', ...user._doc });
+    .json(user._doc);
 };
 
 const createNewUserResponse = (response) => {
